@@ -5,15 +5,19 @@ import Link from "next/link"; // Imported Next.js Link
 import { Input } from "@/components/ui/inputs/index";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const router = useRouter();
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // We will add Supabase authentication logic here later
     console.log("Logging in with:", email, password);
+    router.push("/dashboard");
   };
 
   return (

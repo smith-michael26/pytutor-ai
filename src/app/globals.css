@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* ============================================================
+   PyTutor AI — Color Scheme & Design Tokens
+   Project: AI Chatbot for Learning Programming (Uni Ilorin)
+   ============================================================ */
+
+:root {
+  /* ----------------------------------------------------------
+     PRIMARY PALETTE (Blues)
+  ---------------------------------------------------------- */
+  --color-navy: #1a3a5c;
+  --color-cobalt: #2e6da4;
+  --color-sky: #4ea8de;
+  --color-mist: #d6eaf8;
+
+  /* ----------------------------------------------------------
+     ACCENT PALETTE (Functional / Semantic)
+  ---------------------------------------------------------- */
+  --color-violet: #7c5cbf;
+  --color-emerald: #1db870;
+  --color-amber: #f4a030;
+  --color-crimson: #e84040;
+
+  /* ----------------------------------------------------------
+     NEUTRAL PALETTE
+  ---------------------------------------------------------- */
+  --color-snow: #f8f9fa;
+  --color-white: #ffffff;
+  --color-slate: #6b7280;
+  --color-charcoal: #1f2937;
+
+  /* ----------------------------------------------------------
+     BACKGROUND & TEXT ROLES
+  ---------------------------------------------------------- */
+  --background: var(--color-snow);
+  --foreground: var(--color-charcoal);
+
+  --bg-card: var(--color-white);
+  --bg-sidebar: var(--color-mist);
+  --bg-navbar: var(--color-navy);
+  --bg-chat-ai: var(--color-violet);
+  --bg-code-output: #0d1e30;
+
+  /* ----------------------------------------------------------
+     SHADOWS
+  ---------------------------------------------------------- */
+  --shadow-sm: 0 1px 3px rgba(26, 58, 92, 0.08);
+  --shadow-md: 0 4px 12px rgba(26, 58, 92, 0.12);
+  --shadow-lg: 0 8px 24px rgba(26, 58, 92, 0.16);
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-navy: #4ea8de;
+    --color-cobalt: #7ab2d8;
+    --color-sky: #a8cfe8;
+    --color-mist: #0d1e30;
+
+    --background: #0f172a; /* Dark page background */
+    --foreground: #f1f5f9; /* Light text on dark bg */
+
+    --bg-card: #1e293b;
+    --bg-sidebar: #0d1e30;
+    --bg-navbar: #0d1e30;
+  }
+}
+
+/* ============================================================
+   TAILWIND V4 THEME MAPPING
+   ============================================================ */
+@theme inline {
+  /* Base Roles */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Map Custom Colors to Tailwind */
+  --color-navy: var(--color-navy);
+  --color-cobalt: var(--color-cobalt);
+  --color-sky: var(--color-sky);
+  --color-mist: var(--color-mist);
+  --color-violet: var(--color-violet);
+  --color-emerald: var(--color-emerald);
+  --color-amber: var(--color-amber);
+  --color-crimson: var(--color-crimson);
+  --color-snow: var(--color-snow);
+  --color-charcoal: var(--color-charcoal);
+
+  /* Map Specific Background Roles */
+  --color-bg-card: var(--bg-card);
+  --color-bg-sidebar: var(--bg-sidebar);
+  --color-bg-navbar: var(--bg-navbar);
+  --color-bg-chat-ai: var(--bg-chat-ai);
+  --color-bg-code-output: var(--bg-code-output);
+
+  /* Map Shadows */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  /* Map Fonts to Tailwind Utilities (font-sans and font-mono) */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* Apply the Inter font variable initialized in layout.tsx */
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}

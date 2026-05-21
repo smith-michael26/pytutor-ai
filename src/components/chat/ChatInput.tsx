@@ -32,7 +32,7 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t border-gray-100 p-2 flex flex-col gap-2 flex-shrink-0">
+    <div className="border-t border-gray-100 p-2 flex flex-col gap-2 shrink-0">
       {/* Quick prompts */}
       <div className="flex flex-wrap gap-1">
         {QUICK_PROMPTS.map((prompt) => (
@@ -69,7 +69,7 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
           className="
             w-8 h-8 rounded-xl bg-[#2E6DA4] text-white flex items-center justify-center
             hover:bg-[#1A3A5C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-            flex-shrink-0
+            shrink-0
           "
         >
           {isLoading ? (

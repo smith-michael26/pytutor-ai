@@ -49,7 +49,7 @@ export default function CodeBlock({ code, onTryInEditor }: CodeBlockProps) {
         <pre className="text-xs font-mono leading-relaxed">
           {code.split("\n").map((line, i) => (
             <div key={i} className="flex gap-4">
-              <span className="text-[#4B5563] select-none w-4 text-right flex-shrink-0">
+              <span className="text-[#4B5563] select-none w-4 text-right shrink-0">
                 {i + 1}
               </span>
               <span className="text-[#F1F5F9]">{line}</span>

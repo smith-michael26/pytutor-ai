@@ -17,7 +17,7 @@ export default function OutputConsole({
   return (
     <div className="flex flex-col h-full bg-[#0D1E30] overflow-hidden">
       {/* Console header */}
-      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-[#1A3A5C] flex-shrink-0">
+      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-[#1A3A5C] shrink-0">
         <div
           className={`w-2 h-2 rounded-full ${isRunning ? "bg-[#F4A030] animate-pulse" : "bg-[#1DB870]"}`}
         />
@@ -41,7 +41,7 @@ export default function OutputConsole({
           <div className="flex flex-col gap-0.5">
             {lines.map((line, i) => (
               <div key={i} className="flex items-start gap-2">
-                <span className="text-[#4B5563] font-mono text-[10px] flex-shrink-0 mt-0.5">
+                <span className="text-[#4B5563] font-mono text-[10px] shrink-0 mt-0.5">
                   {">"}
                 </span>
                 <span

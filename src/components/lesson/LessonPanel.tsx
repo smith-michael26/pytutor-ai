@@ -54,7 +54,7 @@ export default function LessonPanel({
         className="flex flex-col flex-1 overflow-hidden"
       >
         {/* Tab bar */}
-        <div className="border-b border-gray-100 px-4 pt-3 flex-shrink-0">
+        <div className="border-b border-gray-100 px-4 pt-3 shrink-0">
           <TabsList className="bg-transparent p-0 gap-1 h-auto">
             {["lesson", "notes", "quiz"].map((tab) => (
               <TabsTrigger

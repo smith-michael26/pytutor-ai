@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
+import { ReduxProvider } from "@/store/provider.";
 
 // Configure the fonts specified in your design system
 const inter = Inter({
@@ -32,7 +33,7 @@ export default function RootLayout({
     >
       {/* Apply the global page background and text color from your globals.css */}
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]">
-        {children}
+        <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
   );

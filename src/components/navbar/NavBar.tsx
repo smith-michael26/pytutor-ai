@@ -1,4 +1,10 @@
+"use client";
+
+import { useLogout } from "@/store/hooks/useLogout";
+
 export default function Navbar() {
+  const { logout } = useLogout();
+
   return (
     <nav className="h-11 bg-[#1A3A5C] flex items-center justify-between px-4 shrink-0">
       {/* Logo */}
@@ -8,13 +14,13 @@ export default function Navbar() {
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-3">
-        <span className="text-[11px] bg-[#7C5CBF] text-white px-3 py-1 rounded-full">
-          Quiz mode
-        </span>
-        <div className="w-7 h-7 rounded-full bg-[#2E6DA4] flex items-center justify-center text-white text-xs font-medium">
-          AB
-        </div>
+      <div className="flex items-center">
+        <button
+          className="text-sm font-medium bg-[#7C5CBF] hover:bg-[#684a9e] text-white px-4 py-1.5 rounded-full cursor-pointer transition-colors"
+          onClick={logout}
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );

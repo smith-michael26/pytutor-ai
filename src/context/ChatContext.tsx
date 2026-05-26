@@ -155,7 +155,9 @@ export function ChatProvider({
 
   useEffect(() => {
     if (initialMessage) {
-      handleSend(initialMessage);
+      Promise.resolve().then(() => {
+        handleSend(initialMessage);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);

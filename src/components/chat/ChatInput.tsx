@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, KeyboardEvent } from "react";
+import { useState, useRef, KeyboardEvent, ChangeEvent } from "react";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -16,15 +16,34 @@ const QUICK_PROMPTS = [
 
 export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
   const [input, setInput] = useState("");
+  // 1. Create a ref to control the textarea's physical height
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 2. Handle input changes and calculate new height
+  const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+
+    if (textareaRef.current) {
+      // Reset height to auto first to properly calculate shrinkage
+      textareaRef.current.style.height = "auto";
+      // Set the height to match the scrollHeight (the actual text size)
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
 
   const handleSend = () => {
     if (!input.trim() || isLoading) return;
     onSend(input.trim());
     setInput("");
+
+    // 3. Reset the height back to 1 row after sending
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    // Send on Enter, new line on Shift+Enter
+    // Send on Enter, allow new line on Shift+Enter
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -40,27 +59,27 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
             key={prompt}
             onClick={() => onSend(prompt)}
             disabled={isLoading}
-            className="text-[9px] bg-[#D6EAF8] text-[#2E6DA4] px-2 py-1 rounded-full hover:bg-[#A8CFE8] transition-colors disabled:opacity-50"
+            className="text-[11px] bg-[#D6EAF8] text-[#2E6DA4] px-2 py-1 rounded-full hover:bg-[#A8CFE8] transition-colors disabled:opacity-50"
           >
             {prompt}
           </button>
         ))}
       </div>
 
-      {/* Input row */}
       <div className="flex items-end gap-2">
         <textarea
+          ref={textareaRef}
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInput}
           onKeyDown={handleKeyDown}
           placeholder="Ask a question... (Enter to send)"
-          rows={2}
+          rows={1} // Start with exactly 1 row
           disabled={isLoading}
           className="
-            flex-1 text-xs border border-gray-200 rounded-xl px-3 py-2
+            flex-1 text-[14px] border border-gray-200 rounded-xl px-3 py-2.5
             resize-none focus:outline-none focus:ring-2 focus:ring-[#4EA8DE]
             placeholder:text-[#9CA3AF] text-[#374151] disabled:opacity-50
-            leading-relaxed
+            leading-relaxed max-h-32 overflow-y-auto
           "
         />
         <button
@@ -69,7 +88,7 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
           className="
             w-8 h-8 rounded-xl bg-[#2E6DA4] text-white flex items-center justify-center
             hover:bg-[#1A3A5C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-            shrink-0
+            shrink-0 mb-1
           "
         >
           {isLoading ? (

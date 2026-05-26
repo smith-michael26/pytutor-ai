@@ -11,18 +11,12 @@ import { Topic } from "@/lib/topics";
 import { Message } from "@/lib/gemini";
 import { createClient } from "@/lib/supabase/client";
 
-const WELCOME_MESSAGE: Message = {
-  role: "ai",
-  content:
-    "Hi! I'm PyTutor AI 👋 I'm here to help you learn Python. Select a topic from the sidebar and ask me anything!",
-  timestamp: new Date(),
-};
-
 interface ChatContextType {
   messages: Message[];
   isLoading: boolean;
   isFetchingHistory: boolean;
   handleSend: (text: string) => Promise<void>;
+  clearHistory: () => Promise<void>;
   activeTopic: Topic | null;
 }
 
@@ -37,7 +31,7 @@ export function ChatProvider({
   activeTopic: Topic | null;
   initialMessage?: string;
 }) {
-  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingHistory, setIsFetchingHistory] = useState(false);
 
@@ -46,7 +40,7 @@ export function ChatProvider({
   useEffect(() => {
     async function loadChatHistory() {
       if (!activeTopic) {
-        setMessages([WELCOME_MESSAGE]);
+        setMessages([]);
         return;
       }
 
@@ -69,7 +63,7 @@ export function ChatProvider({
           }));
           setMessages(history);
         } else {
-          setMessages([WELCOME_MESSAGE]);
+          setMessages([]);
         }
       } catch (err) {
         console.error("Hard error fetching history:", err);
@@ -166,6 +160,22 @@ export function ChatProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);
 
+  const clearHistory = async () => {
+    if (!activeTopic) return;
+
+    const { error } = await supabase
+      .from("chat_messages")
+      .delete()
+      .eq("topic_id", activeTopic.id);
+
+    if (error) {
+      console.error("Failed to clear history:", error);
+      return;
+    }
+
+    setMessages([]);
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -174,6 +184,7 @@ export function ChatProvider({
         isFetchingHistory,
         handleSend,
         activeTopic,
+        clearHistory,
       }}
     >
       {children}

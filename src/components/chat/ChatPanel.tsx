@@ -1,133 +1,112 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Message, sendToGemini } from "@/lib/gemini";
-import { Topic } from "@/lib/topics";
+import { useRef, useEffect, useState } from "react";
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
+import TypingIndicator from "./TypingIndicator";
+import Spinner from "./Spinner";
+import { useChat } from "@/context/ChatContext";
+import DeleteChatModal from "./DeleteChatModal";
 
-interface ChatPanelProps {
-  activeTopic: Topic | null;
-  initialMessage?: string;
-}
-
-const WELCOME_MESSAGE: Message = {
-  role: "ai",
-  content:
-    "Hi! I'm PyTutor AI 👋 I'm here to help you learn Python. Select a topic from the sidebar and ask me anything — I'll explain concepts, review your code, and quiz you!",
-  timestamp: new Date(),
-};
-
-export default function ChatPanel({
-  activeTopic,
-  initialMessage,
-}: ChatPanelProps) {
-  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
-  const [isLoading, setIsLoading] = useState(false);
+export default function ChatPanel() {
+  const {
+    messages,
+    isLoading,
+    isFetchingHistory,
+    handleSend,
+    activeTopic,
+    clearHistory,
+  } = useChat();
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Get API key from environment
-  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-
-    // When LessonPanel triggers "Ask AI Tutor" button
-    useEffect(() => {
-      if (initialMessage) {
-        handleSend(initialMessage);
-      }
-    }, [initialMessage]);
-
-    // Add context about the active topic to first message
-    const contextualText =
-      activeTopic && messages.length === 1
-        ? `I am currently studying Module ${activeTopic.id}: ${activeTopic.title}. ${text}`
-        : text;
-
-    const userMessage: Message = {
-      role: "user",
-      content: text,
-      timestamp: new Date(),
-    };
-
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setIsLoading(true);
-
-    try {
-      const aiResponse = await sendToGemini(
-        [
-          ...messages,
-          { role: "user", content: contextualText, timestamp: new Date() },
-        ],
-        apiKey,
-      );
-
-      const aiMessage: Message = {
-        role: "ai",
-        content: aiResponse,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      const errorMessage: Message = {
-        role: "ai",
-        content:
-          "Sorry, I couldn't connect to the AI right now. Please check your API key in the .env.local file and try again.",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
+  const handleConfirmDelete = async () => {
+    if (clearHistory) {
+      await clearHistory();
     }
+    setShowDeleteConfirm(false);
   };
 
   return (
-    <div className="flex flex-col h-full border-l border-gray-100 bg-white overflow-hidden">
-      {/* Chat header */}
+    <div className="flex flex-col h-full border-l border-gray-100 bg-white relative overflow-hidden">
+      {showDeleteConfirm && (
+        <DeleteChatModal
+          setShowDeleteConfirm={setShowDeleteConfirm}
+          handleConfirmDelete={handleConfirmDelete}
+          activeTopic={activeTopic}
+        />
+      )}
+
       <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 flex-shrink-0">
         <div className="w-2 h-2 rounded-full bg-[#1DB870] animate-pulse" />
         <p className="text-xs font-semibold text-[#1A3A5C]">AI Tutor</p>
+
         {activeTopic && (
           <span className="ml-auto text-[10px] bg-[#D6EAF8] text-[#2E6DA4] px-2 py-0.5 rounded-full">
             {activeTopic.title}
           </span>
         )}
+
+        {messages.length > 0 && (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="ml-2 text-gray-400 hover:text-red-500 hover:bg-red-100 cursor-pointer transition-colors p-1 rounded"
+            title="Clear Conversation"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+          </button>
+        )}
       </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 px-3 py-3">
-        <div className="flex flex-col gap-3">
-          {messages.map((msg, i) => (
-            <MessageBubble key={i} message={msg} />
-          ))}
-
-          {/* Typing indicator */}
-          {isLoading && (
-            <div className="flex items-start gap-2">
-              <div className="bg-[#7C5CBF] rounded-2xl rounded-tl-sm px-3 py-2">
-                <div className="flex gap-1 items-center h-4">
-                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:0ms]" />
-                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:150ms]" />
-                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:300ms]" />
-                </div>
+      <div className="flex-1 overflow-y-auto min-h-0 px-3 py-3 relative">
+        {isFetchingHistory ? (
+          <Spinner />
+        ) : (
+          <div className="flex flex-col gap-3 min-h-full">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center flex-1 text-center px-4 mt-20 opacity-80">
+                <h2 className="text-xl font-bold text-[#1A3A5C] mb-1">
+                  PyTutor AI
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Ask a question about{" "}
+                  {activeTopic ? activeTopic.title.split("—")[0] : "Python"}
+                </p>
               </div>
-            </div>
-          )}
+            ) : (
+              <>
+                {messages.map((msg, i) => (
+                  <MessageBubble key={i} message={msg} />
+                ))}
+              </>
+            )}
 
-          <div ref={bottomRef} />
-        </div>
-      </ScrollArea>
+            {isLoading && <TypingIndicator />}
 
-      {/* Input */}
+            <div ref={bottomRef} />
+          </div>
+        )}
+      </div>
+
       <ChatInput onSend={handleSend} isLoading={isLoading} />
     </div>
   );

@@ -16,17 +16,15 @@ const QUICK_PROMPTS = [
 
 export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
   const [input, setInput] = useState("");
-  // 1. Create a ref to control the textarea's physical height
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // 2. Handle input changes and calculate new height
   const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
 
     if (textareaRef.current) {
-      // Reset height to auto first to properly calculate shrinkage
       textareaRef.current.style.height = "auto";
-      // Set the height to match the scrollHeight (the actual text size)
+
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
@@ -36,14 +34,12 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
     onSend(input.trim());
     setInput("");
 
-    // 3. Reset the height back to 1 row after sending
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    // Send on Enter, allow new line on Shift+Enter
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -52,7 +48,6 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
 
   return (
     <div className="border-t border-gray-100 p-2 flex flex-col gap-2 shrink-0">
-      {/* Quick prompts */}
       <div className="flex flex-wrap gap-1">
         {QUICK_PROMPTS.map((prompt) => (
           <button
@@ -73,7 +68,7 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           placeholder="Ask a question... (Enter to send)"
-          rows={1} // Start with exactly 1 row
+          rows={1}
           disabled={isLoading}
           className="
             flex-1 text-[14px] border border-gray-200 rounded-xl px-3 py-2.5

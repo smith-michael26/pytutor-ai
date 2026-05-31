@@ -1,16 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { topics, Topic } from "@/lib/topics";
+import { Topic } from "@/lib/topics";
 import TopicItem from "./TopicItem";
 import ProgressBar from "./Progressbar";
 
 interface SidebarProps {
+  topics: Topic[];
   onTopicSelect: (topic: Topic) => void;
   activeTopic: Topic | null;
 }
 
-export default function Sidebar({ onTopicSelect, activeTopic }: SidebarProps) {
+export default function Sidebar({
+  topics,
+  onTopicSelect,
+  activeTopic,
+}: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
@@ -21,7 +26,6 @@ export default function Sidebar({ onTopicSelect, activeTopic }: SidebarProps) {
         ${isCollapsed ? "w-12" : "w-72"}
       `}
     >
-      {/* Sidebar Header */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-[#A8CFE8]">
         {!isCollapsed && (
           <p className="text-[10px] font-semibold text-[#2E6DA4] uppercase tracking-widest">
@@ -53,17 +57,20 @@ export default function Sidebar({ onTopicSelect, activeTopic }: SidebarProps) {
         </button>
       </div>
 
-      {/* Topic List */}
       {!isCollapsed && (
         <div className="flex flex-col gap-1 py-2 flex-1 overflow-y-auto">
-          {topics.map((topic) => (
-            <TopicItem key={topic.id} topic={topic} onClick={onTopicSelect} />
+          {topics.map((topic: Topic) => (
+            <TopicItem
+              key={topic.id}
+              topic={topic}
+              onClick={onTopicSelect}
+              isActive={activeTopic?.id === topic.id} // 👈 now activeTopic is used
+            />
           ))}
         </div>
       )}
 
-      {/* Progress Bar — hidden when collapsed */}
-      {!isCollapsed && <ProgressBar />}
+      {!isCollapsed && <ProgressBar topics={topics} />}
     </aside>
   );
 }

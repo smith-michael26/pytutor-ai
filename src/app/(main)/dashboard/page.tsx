@@ -1,25 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { Topic, topics } from "@/lib/topics";
+import { Panel, Group, Separator } from "react-resizable-panels";
+import { CurriculumProvider, useCurriculum } from "@/context/CurriculumContext";
+import { ChatProvider } from "@/context/ChatContext";
 import Sidebar from "@/components/sidebar/Sidebar";
-import LessonPanel from "@/components/lesson/LessonPanel";
 import ChatPanel from "@/components/chat/ChatPanel";
 import EditorPanel from "@/components/editor/EditorPanel";
-import { ChatProvider } from "@/context/ChatContext";
+import LessonPanel from "@/components/lesson/lesson-panel";
 
-import { Panel, Group, Separator } from "react-resizable-panels";
+function DashboardContent() {
+  const { topics, activeTopic, activeLesson, loading, handleTopicSelect } =
+    useCurriculum();
 
-export default function DashboardPage() {
-  const [activeTopic, setActiveTopic] = useState<Topic | null>(
-    topics.find((t) => t.status === "active") || null,
-  );
   const [aiPrompt, setAiPrompt] = useState<string>("");
   const [editorCode, setEditorCode] = useState<string>("");
 
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-[#2E6DA4] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-[#6B7280]">Loading curriculum...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white">
-      <Sidebar onTopicSelect={setActiveTopic} activeTopic={activeTopic} />
+      <Sidebar
+        topics={topics}
+        onTopicSelect={handleTopicSelect}
+        activeTopic={activeTopic}
+      />
 
       <div className="flex-1 overflow-hidden">
         <Group orientation="horizontal">
@@ -27,6 +41,7 @@ export default function DashboardPage() {
             <div className="h-full overflow-hidden">
               <LessonPanel
                 topic={activeTopic}
+                lesson={activeLesson}
                 onTryInEditor={(code) => setEditorCode(code)}
                 onAskAI={(question) => setAiPrompt(question)}
               />
@@ -64,5 +79,13 @@ export default function DashboardPage() {
         </Group>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <CurriculumProvider>
+      <DashboardContent />
+    </CurriculumProvider>
   );
 }

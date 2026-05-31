@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent, ChangeEvent } from "react";
+import { useState, useRef, KeyboardEvent, ChangeEvent, useEffect } from "react";
+import { useChat } from "@/context/ChatContext";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -16,15 +17,26 @@ const QUICK_PROMPTS = [
 
 export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
   const [input, setInput] = useState("");
-
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { prefillMessage, clearPrefill } = useChat();
+
+  useEffect(() => {
+    if (prefillMessage) {
+      setInput(prefillMessage);
+      clearPrefill();
+
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        textareaRef.current.focus();
+      }
+    }
+  }, [prefillMessage, clearPrefill]);
 
   const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
-
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
@@ -33,7 +45,6 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
     if (!input.trim() || isLoading) return;
     onSend(input.trim());
     setInput("");
-
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -67,7 +78,7 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          placeholder="Ask a question... (Enter to send)"
+          placeholder="Ask a question..."
           rows={1}
           disabled={isLoading}
           className="

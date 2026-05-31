@@ -1,9 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
-// Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
   loading: () => (
@@ -16,19 +15,33 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
 interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;
+  onEditorMount?: (editor: any) => void;
 }
 
-export default function CodeEditor({ value, onChange }: CodeEditorProps) {
-  const editorRef = useRef(null);
+export default function CodeEditor({
+  value,
+  onChange,
+  onEditorMount,
+}: CodeEditorProps) {
+  const editorRef = useRef<any>(null);
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
-    // Focus editor on mount
     editor.focus();
+    onEditorMount?.(editor);
   };
 
+  useEffect(() => {
+    if (editorRef.current) {
+      const currentValue = editorRef.current.getValue();
+      if (currentValue !== value) {
+        editorRef.current.setValue(value);
+      }
+    }
+  }, [value]);
+
   return (
-    <div className="flex-1 overflow-hidden">
+    <div className="flex-1 overflow-hidden h-full">
       <MonacoEditor
         height="100%"
         language="python"

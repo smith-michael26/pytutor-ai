@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import CodeEditor from "./CodeEditor";
 import OutputConsole, { OutputLine } from "./OutputConsole";
 
 interface EditorPanelProps {
   initialCode?: string;
+  trigger?: number; // 👈 added
 }
 
 const DEFAULT_CODE = `# Write your Python code here\nprint("Hello, World!")\n`;
@@ -17,20 +18,29 @@ declare global {
   }
 }
 
-export default function EditorPanel({ initialCode }: EditorPanelProps) {
+export default function EditorPanel({
+  initialCode,
+  trigger,
+}: EditorPanelProps) {
   const [code, setCode] = useState(initialCode || DEFAULT_CODE);
   const [outputLines, setOutputLines] = useState<OutputLine[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [pyodideReady, setPyodideReady] = useState(false);
   const [pyodideLoading, setPyodideLoading] = useState(false);
   const pyodideRef = useRef<any>(null);
-  const monacoEditorRef = useRef<any>(null);
+  const monacoEditorRef = useRef<any>(null); // 👈 holds Monaco instance
 
+  // Update code when "Try in Editor" is clicked
+  // trigger in deps ensures it fires even when same code is clicked again
   useEffect(() => {
     if (initialCode && initialCode.trim() !== "") {
       setCode(initialCode);
+      // Directly update Monaco so it visually reflects the change
+      if (monacoEditorRef.current) {
+        monacoEditorRef.current.setValue(initialCode);
+      }
     }
-  }, [initialCode]);
+  }, [initialCode, trigger]); // 👈 trigger here is the key fix
 
   const initPyodide = useCallback(async (): Promise<boolean> => {
     if (pyodideRef.current) return true;
@@ -166,15 +176,18 @@ sys.stderr = io.StringIO()
     }
   }, [code, isRunning, pyodideLoading, initPyodide]);
 
+  // Clear only the output
   const clearOutput = () => setOutputLines([]);
 
+  // Reset editor to default AND clear output
   const resetCode = () => {
     setCode(DEFAULT_CODE);
     setOutputLines([]);
     if (monacoEditorRef.current) {
-      monacoEditorRef.current.setValue(DEFAULT_CODE);
+      monacoEditorRef.current.setValue(DEFAULT_CODE); // 👈 directly update Monaco
     }
   };
+
   return (
     <div className="flex flex-col h-full border-l border-gray-100 overflow-hidden bg-[#1F2937]">
       {/* Toolbar */}
@@ -269,16 +282,18 @@ sys.stderr = io.StringIO()
         </div>
       </div>
 
+      {/* Monaco Editor */}
       <div className="overflow-hidden" style={{ height: "60%" }}>
         <CodeEditor
           value={code}
           onChange={setCode}
           onEditorMount={(editor) => {
-            monacoEditorRef.current = editor;
+            monacoEditorRef.current = editor; // 👈 capture Monaco instance
           }}
         />
       </div>
 
+      {/* Output Console */}
       <div
         className="overflow-hidden border-t border-[#1A3A5C]"
         style={{ height: "40%" }}

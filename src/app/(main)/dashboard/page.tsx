@@ -15,6 +15,7 @@ function DashboardContent() {
 
   const [aiPrompt, setAiPrompt] = useState<string>("");
   const [editorCode, setEditorCode] = useState<string>("");
+  const [editorTrigger, setEditorTrigger] = useState<number>(0);
 
   if (loading) {
     return (
@@ -35,25 +36,29 @@ function DashboardContent() {
         activeTopic={activeTopic}
       />
 
-      <div className="flex-1 overflow-hidden">
-        <Group orientation="horizontal">
+      {/* 👇 flex-1 with h-full passed to Group */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <Group orientation="horizontal" className="h-full">
+          {" "}
+          {/* 👈 h-full added */}
           <Panel defaultSize={50} minSize={30}>
-            <div className="h-full overflow-hidden">
-              <LessonPanel
-                topic={activeTopic}
-                lesson={activeLesson}
-                onTryInEditor={(code) => setEditorCode(code)}
-                onAskAI={(question) => setAiPrompt(question)}
-              />
-            </div>
+            <LessonPanel
+              topic={activeTopic}
+              lesson={activeLesson}
+              onTryInEditor={(code) => {
+                setEditorCode(code);
+                setEditorTrigger((prev) => prev + 1);
+              }}
+              onAskAI={(question) => setAiPrompt(question)}
+            />
           </Panel>
-
           <Separator className="w-1.5 bg-gray-100 hover:bg-[#4EA8DE] transition-colors cursor-col-resize flex flex-col justify-center items-center group">
             <div className="w-0.5 h-8 bg-gray-300 group-hover:bg-white rounded-full transition-colors" />
           </Separator>
-
           <Panel defaultSize={50} minSize={30}>
-            <Group orientation="vertical">
+            <Group orientation="vertical" className="h-full">
+              {" "}
+              {/* 👈 h-full added */}
               <Panel defaultSize={50} minSize={20}>
                 <div className="h-full overflow-hidden">
                   <ChatProvider
@@ -64,14 +69,15 @@ function DashboardContent() {
                   </ChatProvider>
                 </div>
               </Panel>
-
               <Separator className="h-1.5 bg-gray-100 hover:bg-[#4EA8DE] transition-colors cursor-row-resize flex justify-center items-center group">
                 <div className="w-8 h-0.5 bg-gray-300 group-hover:bg-white rounded-full transition-colors" />
               </Separator>
-
               <Panel defaultSize={50} minSize={20}>
                 <div className="h-full overflow-hidden">
-                  <EditorPanel initialCode={editorCode} />
+                  <EditorPanel
+                    initialCode={editorCode}
+                    trigger={editorTrigger}
+                  />
                 </div>
               </Panel>
             </Group>

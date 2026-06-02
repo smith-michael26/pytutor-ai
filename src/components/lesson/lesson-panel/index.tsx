@@ -1,11 +1,11 @@
 "use client";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Topic } from "@/lib/topics";
 import { Lesson } from "@/lib/lessons";
 import LessonTab from "./components/LessonTab";
 import QuizTab from "./components/QuizTab";
 import NoteTab from "./components/NoteTab";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface LessonPanelProps {
   topic: Topic | null;
@@ -37,10 +37,12 @@ export default function LessonPanel({
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-white">
+    <div className="flex flex-col h-full bg-white">
+      {/* overflow-hidden */}
       <Tabs
         defaultValue="lesson"
-        className="flex flex-col flex-1 overflow-hidden"
+        className="flex flex-col flex-1 overflow-scroll"
+        // overflow-hidden
       >
         {/* Tab bar */}
         <div className="border-b border-gray-100 px-4 pt-3 shrink-0">
@@ -74,5 +76,45 @@ export default function LessonPanel({
         <QuizTab topic={topic} lesson={lesson} onAskAI={onAskAI} />
       </Tabs>
     </div>
+
+    // <div className="flex flex-col h-full bg-white">
+    //   {/* Tab bar */}
+    //   <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3 bg-white shrink-0 overflow-x-auto">
+    //     {(["lesson", "notes", "quiz"] as TabValue[]).map((tab) => (
+    //       <button
+    //         key={tab}
+    //         type="button"
+    //         onClick={() => setActiveTab(tab)}
+    //         className={`
+    //           capitalize text-xs px-4 py-2.5 border-b-2 transition-colors whitespace-nowrap
+    //           ${
+    //             activeTab === tab
+    //               ? "border-[#2E6DA4] text-[#2E6DA4] font-medium"
+    //               : "border-transparent text-[#6B7280] hover:text-[#1A3A5C]"
+    //           }
+    //         `}
+    //       >
+    //         {tab}
+    //       </button>
+    //     ))}
+    //   </div>
+
+    //   {/* Tab content */}
+    //   <div className="flex-1 overflow-hidden">
+    //     {activeTab === "lesson" && (
+    //       <LessonTab
+    //         topic={topic}
+    //         lesson={lesson}
+    //         onTryInEditor={onTryInEditor}
+    //         onAskAI={onAskAI}
+    //         onSwitchToQuiz={() => setActiveTab("quiz")}
+    //       />
+    //     )}
+    //     {activeTab === "notes" && <NoteTab topic={topic} lesson={lesson} />}
+    //     {activeTab === "quiz" && (
+    //       <QuizTab topic={topic} lesson={lesson} onAskAI={onAskAI} />
+    //     )}
+    //   </div>
+    // </div>
   );
 }

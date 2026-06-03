@@ -18,7 +18,6 @@ export default function ChatPanel() {
     activeTopic,
     clearHistory,
   } = useChat();
-
   const bottomRef = useRef<HTMLDivElement>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 

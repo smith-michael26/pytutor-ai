@@ -19,7 +19,6 @@ export default function LessonPanel({
   onTryInEditor,
   onAskAI,
 }: LessonPanelProps) {
-  // Empty state
   if (!topic) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-8">
@@ -38,7 +37,6 @@ export default function LessonPanel({
 
   const lesson = lessons[topic.id];
 
-  // No lesson content yet
   if (!lesson) {
     return (
       <div className="flex-1 flex items-center justify-center text-sm text-[#6B7280]">
@@ -53,7 +51,6 @@ export default function LessonPanel({
         defaultValue="lesson"
         className="flex flex-col flex-1 overflow-hidden"
       >
-        {/* Tab bar */}
         <div className="border-b border-gray-100 px-4 pt-3 shrink-0">
           <TabsList className="bg-transparent p-0 gap-1 h-auto">
             {["lesson", "notes", "quiz"].map((tab) => (
@@ -64,7 +61,7 @@ export default function LessonPanel({
                   capitalize text-xs px-4 py-2 rounded-none border-b-2 border-transparent
                   data-[state=active]:border-[#2E6DA4] data-[state=active]:text-[#2E6DA4]
                   data-[state=active]:bg-transparent data-[state=active]:shadow-none
-                  text-[#6B7280] hover:text-[#1A3A5C] transition-colors
+                  text-[#6B7280] hover:text-[#1A3A5C] transition-colors cursor-pointer
                 "
               >
                 {tab}
@@ -73,11 +70,9 @@ export default function LessonPanel({
           </TabsList>
         </div>
 
-        {/* Lesson tab */}
         <TabsContent value="lesson" className="flex-1 overflow-hidden mt-0">
           <ScrollArea className="h-full">
             <div className="px-5 py-4">
-              {/* Lesson header */}
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-1">
                   <h1 className="text-base font-semibold text-[#1A3A5C]">
@@ -97,7 +92,6 @@ export default function LessonPanel({
                 </div>
               </div>
 
-              {/* Lesson sections */}
               <div className="space-y-1">
                 {lesson.sections.map((section, index) => {
                   if (section.type === "text") {
@@ -129,7 +123,6 @@ export default function LessonPanel({
                 })}
               </div>
 
-              {/* Action buttons */}
               <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
                 <button
                   onClick={() =>
@@ -155,7 +148,6 @@ export default function LessonPanel({
           </ScrollArea>
         </TabsContent>
 
-        {/* Notes tab */}
         <TabsContent value="notes" className="flex-1 overflow-hidden mt-0">
           <ScrollArea className="h-full">
             <div className="px-5 py-4">
@@ -173,7 +165,6 @@ export default function LessonPanel({
           </ScrollArea>
         </TabsContent>
 
-        {/* Quiz tab */}
         <TabsContent value="quiz" className="flex-1 overflow-hidden mt-0">
           <ScrollArea className="h-full">
             <div className="px-5 py-4 flex flex-col items-center justify-center min-h-48 gap-3 text-center">

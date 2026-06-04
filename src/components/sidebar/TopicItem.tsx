@@ -3,6 +3,7 @@ import { Topic, TopicStatus } from "@/lib/topics";
 interface TopicItemProps {
   topic: Topic;
   onClick: (topic: Topic) => void;
+  isActive: boolean;
 }
 
 const statusConfig: Record<
@@ -15,9 +16,12 @@ const statusConfig: Record<
   locked: { bg: "bg-[#6B7280]", icon: "🔒", iconColor: "text-white" },
 };
 
-export default function TopicItem({ topic, onClick }: TopicItemProps) {
+export default function TopicItem({
+  topic,
+  onClick,
+  isActive,
+}: TopicItemProps) {
   const config = statusConfig[topic.status];
-  const isActive = topic.status === "active";
   const isLocked = topic.status === "locked";
 
   return (
@@ -34,7 +38,6 @@ export default function TopicItem({ topic, onClick }: TopicItemProps) {
         ${isLocked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
-      {/* Status icon circle */}
       <div
         className={`
         w-5 h-5 rounded-full shrink-0 flex items-center justify-center
@@ -46,7 +49,6 @@ export default function TopicItem({ topic, onClick }: TopicItemProps) {
         </span>
       </div>
 
-      {/* Topic title */}
       <div className="flex-1 min-w-0">
         <p
           className={`

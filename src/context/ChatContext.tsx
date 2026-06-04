@@ -18,6 +18,8 @@ interface ChatContextType {
   handleSend: (text: string) => Promise<void>;
   clearHistory: () => Promise<void>;
   activeTopic: Topic | null;
+  prefillMessage: string;
+  clearPrefill: () => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -34,6 +36,15 @@ export function ChatProvider({
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingHistory, setIsFetchingHistory] = useState(false);
+  const [prefillMessage, setPrefillMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (initialMessage) {
+      setPrefillMessage(initialMessage);
+    }
+  }, [initialMessage]);
+
+  const clearPrefill = () => setPrefillMessage("");
 
   const supabase = createClient();
 
@@ -187,6 +198,8 @@ export function ChatProvider({
         handleSend,
         activeTopic,
         clearHistory,
+        prefillMessage,
+        clearPrefill,
       }}
     >
       {children}

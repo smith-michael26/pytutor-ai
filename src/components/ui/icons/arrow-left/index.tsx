@@ -1,6 +1,6 @@
 import { IconProps } from "../_types";
 
-export default function SendIcon({ className }: IconProps) {
+export default function ArrowLeftIcon({ className }: IconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,12 +11,9 @@ export default function SendIcon({ className }: IconProps) {
     >
       <path d="M0 0h24v24H0z" fill="none" />
       <path
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M10 14L21 3m0 0l-6.5 18a.55.55 0 0 1-1 0L10 14l-7-3.5a.55.55 0 0 1 0-1z"
+        fill="currentColor"
+        fillRule="evenodd"
+        d="m15 4l2 2l-6 6l6 6l-2 2l-8-8z"
       />
     </svg>
   );

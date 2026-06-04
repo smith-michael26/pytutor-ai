@@ -3,6 +3,8 @@ export interface IconProps {
 }
 
 export const Icons = {
+  ArrowLeft: "arrow-left",
+  ArrowRight: "arrow-right",
   Loading: "loading",
   Send: "send",
   Trash: "trash",

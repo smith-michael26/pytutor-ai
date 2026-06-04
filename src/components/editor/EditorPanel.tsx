@@ -6,6 +6,7 @@ import OutputConsole, { OutputLine } from "./OutputConsole";
 
 interface EditorPanelProps {
   initialCode?: string;
+  trigger?: number;
 }
 
 const DEFAULT_CODE = `# Write your Python code here
@@ -20,13 +21,17 @@ declare global {
   }
 }
 
-export default function EditorPanel({ initialCode }: EditorPanelProps) {
+export default function EditorPanel({
+  initialCode,
+  trigger,
+}: EditorPanelProps) {
   const [code, setCode] = useState(initialCode || DEFAULT_CODE);
   const [outputLines, setOutputLines] = useState<OutputLine[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [pyodideReady, setPyodideReady] = useState(false);
   const [loadingPyodide, setLoadingPyodide] = useState(true);
   const pyodideRef = useRef<any>(null);
+  const monacoEditorRef = useRef<any>(null);
 
   // Update code when initialCode changes (from "Try in Editor" button)
   useEffect(() => {
@@ -153,9 +158,13 @@ sys.stderr = io.StringIO()
 
   const clearOutput = () => setOutputLines([]);
 
+  // Reset editor to default AND clear output
   const resetCode = () => {
-    setCode(initialCode || DEFAULT_CODE);
+    setCode(DEFAULT_CODE);
     setOutputLines([]);
+    if (monacoEditorRef.current) {
+      monacoEditorRef.current.setValue(DEFAULT_CODE); // 👈 directly update Monaco
+    }
   };
 
   return (
@@ -250,7 +259,13 @@ sys.stderr = io.StringIO()
 
       {/* Monaco Editor — takes 60% height */}
       <div className="flex flex-col overflow-hidden" style={{ height: "60%" }}>
-        <CodeEditor value={code} onChange={setCode} />
+        <CodeEditor
+          value={code}
+          onChange={setCode}
+          onEditorMount={(editor) => {
+            monacoEditorRef.current = editor; // 👈 capture Monaco instance
+          }}
+        />
       </div>
 
       {/* Output Console — takes 40% height */}

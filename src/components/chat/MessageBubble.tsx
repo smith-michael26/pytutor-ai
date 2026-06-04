@@ -1,4 +1,4 @@
-import { Message } from "@/lib/gemini";
+import { Message } from "@/lib/types";
 import ReactMarkdown from "react-markdown";
 
 interface MessageBubbleProps {
@@ -54,7 +54,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                   <ul className="list-disc pl-4 my-1 space-y-1">{children}</ul>
                 ),
 
-                code({ node, inline, className, children, ...props }: any) {
+                code({ inline, children, ...props }: any) {
                   return !inline ? (
                     <div className="mt-2 bg-[#1F2937] rounded-lg px-3 py-2 overflow-x-auto">
                       <pre className="text-xs font-mono text-[#F1F5F9] whitespace-pre-wrap">

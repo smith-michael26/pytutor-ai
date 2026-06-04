@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { useRef } from "react";
 
-// Dynamically import Monaco to avoid SSR issues
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
   loading: () => (
@@ -16,15 +15,24 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
 interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;
+  onEditorMount?: (editor: any) => void;
 }
 
-export default function CodeEditor({ value, onChange }: CodeEditorProps) {
+export default function CodeEditor({
+  value,
+  onChange,
+  onEditorMount,
+}: CodeEditorProps) {
   const editorRef = useRef(null);
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
-    // Focus editor on mount
+
     editor.focus();
+
+    if (onEditorMount) {
+      onEditorMount(editor);
+    }
   };
 
   return (

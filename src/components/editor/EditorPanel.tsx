@@ -13,7 +13,6 @@ const DEFAULT_CODE = `# Write your Python code here
 print("Hello, World!")
 `;
 
-// Declare pyodide on window for TypeScript
 declare global {
   interface Window {
     loadPyodide: (config: { indexURL: string }) => Promise<any>;
@@ -33,18 +32,15 @@ export default function EditorPanel({
   const pyodideRef = useRef<any>(null);
   const monacoEditorRef = useRef<any>(null);
 
-  // Update code when initialCode changes (from "Try in Editor" button)
   useEffect(() => {
     if (initialCode) {
       setCode(initialCode);
     }
   }, [initialCode]);
 
-  // Load Pyodide on component mount
   useEffect(() => {
     const loadPyodide = async () => {
       try {
-        // Inject Pyodide script into the page
         if (!document.getElementById("pyodide-script")) {
           const script = document.createElement("script");
           script.id = "pyodide-script";
@@ -103,7 +99,6 @@ export default function EditorPanel({
       const pyodide = pyodideRef.current;
       const outputBuffer: OutputLine[] = [];
 
-      // Redirect Python stdout and stderr
       pyodide.runPython(`
 import sys
 import io
@@ -140,7 +135,6 @@ sys.stderr = io.StringIO()
         }
       }
 
-      // Execution time info
       outputBuffer.push({
         type: "info",
         text: `Process finished.`,
@@ -158,21 +152,18 @@ sys.stderr = io.StringIO()
 
   const clearOutput = () => setOutputLines([]);
 
-  // Reset editor to default AND clear output
   const resetCode = () => {
     setCode(DEFAULT_CODE);
     setOutputLines([]);
     if (monacoEditorRef.current) {
-      monacoEditorRef.current.setValue(DEFAULT_CODE); // 👈 directly update Monaco
+      monacoEditorRef.current.setValue(DEFAULT_CODE);
     }
   };
 
   return (
     <div className="flex flex-col h-full border-l border-gray-100 overflow-hidden bg-[#1F2937]">
-      {/* Editor toolbar */}
       <div className="flex items-center justify-between px-3 py-2 bg-[#1F2937] border-b border-[#2E3A4A] flex-shrink-0">
         <div className="flex items-center gap-2">
-          {/* Traffic lights */}
           <div className="w-2.5 h-2.5 rounded-full bg-[#E84040]" />
           <div className="w-2.5 h-2.5 rounded-full bg-[#F4A030]" />
           <div className="w-2.5 h-2.5 rounded-full bg-[#1DB870]" />
@@ -191,7 +182,6 @@ sys.stderr = io.StringIO()
           )}
         </div>
 
-        {/* Action buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={clearOutput}
@@ -257,18 +247,16 @@ sys.stderr = io.StringIO()
         </div>
       </div>
 
-      {/* Monaco Editor — takes 60% height */}
       <div className="flex flex-col overflow-hidden" style={{ height: "60%" }}>
         <CodeEditor
           value={code}
           onChange={setCode}
           onEditorMount={(editor) => {
-            monacoEditorRef.current = editor; // 👈 capture Monaco instance
+            monacoEditorRef.current = editor;
           }}
         />
       </div>
 
-      {/* Output Console — takes 40% height */}
       <div
         className="flex flex-col overflow-hidden border-t border-[#1A3A5C]"
         style={{ height: "40%" }}

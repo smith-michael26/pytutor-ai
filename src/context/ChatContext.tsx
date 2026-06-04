@@ -8,8 +8,8 @@ import {
   ReactNode,
 } from "react";
 import { Topic } from "@/lib/topics";
-import { Message } from "@/lib/gemini";
 import { createClient } from "@/lib/supabase/client";
+import { Message } from "@/lib/types";
 
 interface ChatContextType {
   messages: Message[];

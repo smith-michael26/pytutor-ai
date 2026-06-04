@@ -52,7 +52,7 @@ export default function LessonPanel({
                   capitalize text-xs px-4 py-2 rounded-none border-b-2 border-transparent
                   data-[state=active]:border-[#2E6DA4] data-[state=active]:text-[#2E6DA4]
                   data-[state=active]:bg-transparent data-[state=active]:shadow-none
-                  text-[#6B7280] hover:text-[#1A3A5C] transition-colors cursor-pointer
+                  text-[#6B7280] hover:text-[#1A3A5C]! cursor-pointer hover:bg-[#D6EAF8]/60 transition-all
                 "
               >
                 {tab}

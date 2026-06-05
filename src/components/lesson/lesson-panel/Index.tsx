@@ -6,6 +6,7 @@ import { Lesson } from "@/lib/lessons";
 import LessonTab from "./components/LessonTab";
 import NoteTab from "./components/NoteTab";
 import QuizTab from "./components/QuizTab";
+import { NotesProvider } from "@/context/NoteContext";
 
 interface LessonPanelProps {
   topic: Topic | null;
@@ -68,7 +69,9 @@ export default function LessonPanel({
           onAskAI={onAskAI}
         />
 
-        <NoteTab topic={topic} lesson={lesson} />
+        <NotesProvider activeTopic={topic}>
+          <NoteTab />
+        </NotesProvider>
 
         <QuizTab topic={topic} lesson={lesson} onAskAI={onAskAI} />
       </Tabs>

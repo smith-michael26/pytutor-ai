@@ -164,15 +164,6 @@ export function ChatProvider({
     }
   };
 
-  useEffect(() => {
-    if (initialMessage) {
-      Promise.resolve().then(() => {
-        handleSend(initialMessage);
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialMessage]);
-
   const clearHistory = async () => {
     if (!activeTopic) return;
 

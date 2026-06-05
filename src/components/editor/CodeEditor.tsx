@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -16,27 +16,47 @@ interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;
   onEditorMount?: (editor: any) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  isPlaceholder?: boolean;
 }
 
 export default function CodeEditor({
   value,
   onChange,
   onEditorMount,
+  onFocus,
+  onBlur,
+  isPlaceholder = false,
 }: CodeEditorProps) {
-  const editorRef = useRef(null);
+  const editorRef = useRef<any>(null);
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
 
-    editor.focus();
+    editor.onDidFocusEditorText(() => onFocus?.());
+    editor.onDidBlurEditorText(() => onBlur?.());
 
     if (onEditorMount) {
       onEditorMount(editor);
     }
   };
 
+  useEffect(() => {
+    if (editorRef.current) {
+      const currentValue = editorRef.current.getValue();
+      if (currentValue !== value) {
+        editorRef.current.setValue(value);
+      }
+    }
+  }, [value]);
+
   return (
-    <div className="flex-1 overflow-hidden">
+    <div
+      className={`flex-1 overflow-hidden transition-opacity duration-200 ${
+        isPlaceholder ? "opacity-40" : "opacity-100"
+      }`}
+    >
       <MonacoEditor
         height="100%"
         language="python"

@@ -9,9 +9,7 @@ interface EditorPanelProps {
   trigger?: number;
 }
 
-const DEFAULT_CODE = `# Write your Python code here
-print("Hello, World!")
-`;
+const DEFAULT_CODE = `# Write your Python code here\nprint("Hello, World!")\n`;
 
 declare global {
   interface Window {
@@ -24,7 +22,8 @@ export default function EditorPanel({
   initialCode,
   trigger,
 }: EditorPanelProps) {
-  const [code, setCode] = useState(initialCode || DEFAULT_CODE);
+  const [code, setCode] = useState(DEFAULT_CODE);
+  const [isPlaceholder, setIsPlaceholder] = useState(true);
   const [outputLines, setOutputLines] = useState<OutputLine[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [pyodideReady, setPyodideReady] = useState(false);
@@ -33,10 +32,12 @@ export default function EditorPanel({
   const monacoEditorRef = useRef<any>(null);
 
   useEffect(() => {
-    if (initialCode) {
+    if (initialCode && initialCode.trim() !== "") {
       setCode(initialCode);
+      setIsPlaceholder(false);
+      monacoEditorRef.current?.setValue(initialCode);
     }
-  }, [initialCode]);
+  }, [initialCode, trigger]);
 
   useEffect(() => {
     const loadPyodide = async () => {
@@ -87,8 +88,26 @@ export default function EditorPanel({
     loadPyodide();
   }, []);
 
+  const handleEditorFocus = () => {
+    if (isPlaceholder) {
+      setIsPlaceholder(false);
+      setCode("");
+      monacoEditorRef.current?.setValue("");
+    }
+  };
+
+  const handleEditorBlur = () => {
+    if (!code.trim()) {
+      setIsPlaceholder(true);
+      setCode(DEFAULT_CODE);
+      monacoEditorRef.current?.setValue(DEFAULT_CODE);
+    }
+  };
+
   const runCode = useCallback(async () => {
     if (!pyodideReady || !pyodideRef.current || isRunning) return;
+
+    if (isPlaceholder) return;
 
     setIsRunning(true);
     setOutputLines([
@@ -135,11 +154,7 @@ sys.stderr = io.StringIO()
         }
       }
 
-      outputBuffer.push({
-        type: "info",
-        text: `Process finished.`,
-      });
-
+      outputBuffer.push({ type: "info", text: "Process finished." });
       setOutputLines(outputBuffer);
     } catch (err: any) {
       setOutputLines([
@@ -148,16 +163,15 @@ sys.stderr = io.StringIO()
     } finally {
       setIsRunning(false);
     }
-  }, [code, pyodideReady, isRunning]);
+  }, [code, pyodideReady, isRunning, isPlaceholder]);
 
   const clearOutput = () => setOutputLines([]);
 
   const resetCode = () => {
     setCode(DEFAULT_CODE);
+    setIsPlaceholder(true);
     setOutputLines([]);
-    if (monacoEditorRef.current) {
-      monacoEditorRef.current.setValue(DEFAULT_CODE);
-    }
+    monacoEditorRef.current?.setValue(DEFAULT_CODE);
   };
 
   return (
@@ -197,12 +211,12 @@ sys.stderr = io.StringIO()
           </button>
           <button
             onClick={runCode}
-            disabled={!pyodideReady || isRunning}
+            disabled={!pyodideReady || isRunning || isPlaceholder}
             className={`
               flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium
               transition-all duration-150
               ${
-                pyodideReady && !isRunning
+                pyodideReady && !isRunning && !isPlaceholder
                   ? "bg-[#1DB870] text-white hover:bg-[#17a362] cursor-pointer"
                   : "bg-[#4B5563] text-[#9CA3AF] cursor-not-allowed"
               }
@@ -250,10 +264,16 @@ sys.stderr = io.StringIO()
       <div className="flex flex-col overflow-hidden" style={{ height: "60%" }}>
         <CodeEditor
           value={code}
-          onChange={setCode}
+          onChange={(val) => {
+            setCode(val);
+            if (isPlaceholder) setIsPlaceholder(false);
+          }}
           onEditorMount={(editor) => {
             monacoEditorRef.current = editor;
           }}
+          onFocus={handleEditorFocus}
+          onBlur={handleEditorBlur}
+          isPlaceholder={isPlaceholder}
         />
       </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "@/lib/supabase/client";
 import {
   createContext,
   useContext,
@@ -17,6 +18,7 @@ interface CurriculumContextType {
   activeLesson: Lesson | null;
   loading: boolean;
   handleTopicSelect: (topic: Topic) => void;
+  continueToNextTopic: () => void; // 👈 new
 }
 
 const CurriculumContext = createContext<CurriculumContextType | null>(null);
@@ -28,12 +30,31 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadLessons = async () => {
-      const lessons = await fetchAllLessons();
-      setAllLessons(lessons);
+  // Persist completed topics across sessions
+  const [completedIds, setCompletedIds] = useState<number[]>([]);
 
-      const builtTopics = buildTopicsFromLessons(lessons, [], 1);
+  // ✅ Replace with
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+
+      // Fetch lessons and completed topics in parallel
+      const [lessons, progressResult] = await Promise.all([
+        fetchAllLessons(),
+        supabase
+          .from("user_progress")
+          .select("topic_id")
+          .order("topic_id", { ascending: true }),
+      ]);
+
+      const completed = progressResult.data?.map((r) => r.topic_id) ?? [];
+
+      setAllLessons(lessons);
+      setCompletedIds(completed);
+
+      const activeId = completed.length > 0 ? Math.max(...completed) + 1 : 1;
+
+      const builtTopics = buildTopicsFromLessons(lessons, completed, activeId);
       setTopics(builtTopics);
 
       const firstActive = builtTopics.find((t) => t.status === "active");
@@ -46,13 +67,51 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     };
 
-    loadLessons();
+    load();
   }, []);
 
   const handleTopicSelect = (topic: Topic) => {
     setActiveTopic(topic);
     const lesson = allLessons.find((l) => l.topic_id === topic.id);
     setActiveLesson(lesson || null);
+  };
+
+  const continueToNextTopic = async () => {
+    if (!activeTopic) return;
+
+    const newCompleted = [...completedIds, activeTopic.id];
+    setCompletedIds(newCompleted);
+
+    // Persist
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { error } = await supabase.from("user_progress").upsert(
+        {
+          user_id: user.id,
+          topic_id: activeTopic.id,
+        },
+        { onConflict: "user_id,topic_id" },
+      );
+      if (error) console.error("Failed to save progress:", error.message);
+    }
+
+    const nextId = activeTopic.id + 1;
+    const nextLesson = allLessons.find((l) => l.topic_id === nextId);
+
+    // Rebuild sidebar statuses
+    const newTopics = buildTopicsFromLessons(allLessons, newCompleted, nextId);
+    setTopics(newTopics);
+
+    if (nextLesson) {
+      const nextTopic = newTopics.find((t) => t.id === nextId) || null;
+      setActiveTopic(nextTopic);
+      setActiveLesson(nextLesson);
+    }
+    // If no next topic — all topics completed, stay on current
   };
 
   return (
@@ -64,6 +123,7 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
         activeLesson,
         loading,
         handleTopicSelect,
+        continueToNextTopic,
       }}
     >
       {children}
@@ -73,8 +133,7 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
 
 export function useCurriculum() {
   const context = useContext(CurriculumContext);
-  if (!context) {
+  if (!context)
     throw new Error("useCurriculum must be used inside CurriculumProvider");
-  }
   return context;
 }

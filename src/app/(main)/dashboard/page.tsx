@@ -9,8 +9,14 @@ import { ChatProvider } from "@/context/ChatContext";
 import { CurriculumProvider, useCurriculum } from "@/context/CurriculumContext";
 
 function DashboardPageContent() {
-  const { topics, activeTopic, activeLesson, loading, handleTopicSelect } =
-    useCurriculum();
+  const {
+    topics,
+    activeTopic,
+    activeLesson,
+    loading,
+    handleTopicSelect,
+    continueToNextTopic,
+  } = useCurriculum();
 
   const [aiPrompt, setAiPrompt] = useState<string>("");
   const [editorCode, setEditorCode] = useState<string>("");
@@ -44,6 +50,7 @@ function DashboardPageContent() {
             setEditorTrigger((prev) => prev + 1);
           }}
           onAskAI={(question) => setAiPrompt(question)}
+          onContinueToNext={continueToNextTopic}
         />
       </div>
 

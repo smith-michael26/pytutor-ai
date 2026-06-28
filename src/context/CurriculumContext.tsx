@@ -30,15 +30,12 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Persist completed topics across sessions
   const [completedIds, setCompletedIds] = useState<number[]>([]);
 
-  // ✅ Replace with
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
 
-      // Fetch lessons and completed topics in parallel
       const [lessons, progressResult] = await Promise.all([
         fetchAllLessons(),
         supabase
@@ -82,7 +79,6 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
     const newCompleted = [...completedIds, activeTopic.id];
     setCompletedIds(newCompleted);
 
-    // Persist
     const supabase = createClient();
     const {
       data: { user },
@@ -102,7 +98,6 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
     const nextId = activeTopic.id + 1;
     const nextLesson = allLessons.find((l) => l.topic_id === nextId);
 
-    // Rebuild sidebar statuses
     const newTopics = buildTopicsFromLessons(allLessons, newCompleted, nextId);
     setTopics(newTopics);
 
@@ -111,7 +106,6 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
       setActiveTopic(nextTopic);
       setActiveLesson(nextLesson);
     }
-    // If no next topic — all topics completed, stay on current
   };
 
   return (

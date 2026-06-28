@@ -51,6 +51,7 @@ export function usePyodide() {
           resolve(window.pyodide);
         } else {
           existing.addEventListener("load", finishLoad);
+          finishLoad();
         }
         return;
       }

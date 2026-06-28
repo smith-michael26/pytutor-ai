@@ -48,8 +48,8 @@ export default function CodeQuestion({
       )}
 
       <div
-        className="rounded-lg overflow-hidden border border-[#2E3A4A] mb-2"
-        style={{ height: "140px" }}
+        className="rounded-lg overflow-hidden border border-[#2E3A4A] mb-2 bg-[#1F2937] flex flex-col"
+        style={{ height: "160px" }}
       >
         <CodeEditor value={code} onChange={onCodeChange} />
       </div>

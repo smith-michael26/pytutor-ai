@@ -24,7 +24,7 @@ function QuizTabContent({
 
   return (
     <TabsContent value="quiz" className="flex-1 overflow-hidden mt-0">
-      <div className="h-full">
+      <div className="h-full overflow-y-auto">
         <div className="px-5 py-4">
           {/* INTRO */}
           {status === "intro" && (
@@ -48,11 +48,7 @@ function QuizTabContent({
           )}
 
           {/* REVIEW */}
-          {status === "reviewing" && (
-            <div className="overflow-y-auto">
-              <QuizReview />
-            </div>
-          )}
+          {status === "reviewing" && <QuizReview />}
         </div>
       </div>
     </TabsContent>

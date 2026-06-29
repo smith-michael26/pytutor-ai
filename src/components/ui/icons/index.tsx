@@ -1,6 +1,8 @@
 import { IconProps, Icons } from "./_types";
 import ArrowLeftIcon from "./arrow-left";
 import ArrowRightIcon from "./arrow-right";
+import EyeCloseIcon from "./eye-close";
+import EyeOpenIcon from "./eye-open";
 import LoadingIcon from "./loading";
 import SendIcon from "./send";
 import SnakeIcon from "./snake";
@@ -23,9 +25,6 @@ export function Icon({ type, className }: Props) {
     case "loading":
       return <LoadingIcon {...props} />;
 
-    case "loading":
-      return <LoadingIcon {...props} />;
-
     case "send":
       return <SendIcon {...props} />;
 
@@ -34,6 +33,12 @@ export function Icon({ type, className }: Props) {
 
     case "trash":
       return <TrashIcon {...props} />;
+
+    case "eye-close":
+      return <EyeCloseIcon {...props} />;
+
+    case "eye-open":
+      return <EyeOpenIcon {...props} />;
 
     default:
       return null;

@@ -3,6 +3,7 @@ import ArrowLeftIcon from "./arrow-left";
 import ArrowRightIcon from "./arrow-right";
 import LoadingIcon from "./loading";
 import SendIcon from "./send";
+import SnakeIcon from "./snake";
 import TrashIcon from "./trash";
 
 interface Props extends IconProps {
@@ -27,6 +28,9 @@ export function Icon({ type, className }: Props) {
 
     case "send":
       return <SendIcon {...props} />;
+
+    case "snake":
+      return <SnakeIcon {...props} />;
 
     case "trash":
       return <TrashIcon {...props} />;

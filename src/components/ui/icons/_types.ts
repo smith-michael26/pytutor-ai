@@ -7,6 +7,7 @@ export const Icons = {
   ArrowRight: "arrow-right",
   Loading: "loading",
   Send: "send",
+  Snake: "snake",
   Trash: "trash",
 };
 

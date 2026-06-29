@@ -6,7 +6,7 @@ interface QuizResultsProps {
 }
 
 export default function QuizResults({ onContinue }: QuizResultsProps) {
-  const { questions, earnedPoints, setStatus } = useQuiz();
+  const { questions, earnedPoints, setStatus, topicId } = useQuiz();
 
   // State setter functions from context - need to update status
   const maxPoints = getMaxPoints(questions);
@@ -52,7 +52,8 @@ export default function QuizResults({ onContinue }: QuizResultsProps) {
             onClick={onContinue}
             className="text-xs bg-[#1DB870] text-white px-4 py-2.5 rounded-lg hover:bg-[#17a362] transition-colors cursor-pointer"
           >
-            ✓ Continue to Next Lesson
+            ✓{" "}
+            {topicId === 20 ? "Complete Course 🎓" : "Continue to Next Lesson"}
           </button>
         )}
 

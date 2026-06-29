@@ -18,7 +18,8 @@ interface CurriculumContextType {
   activeLesson: Lesson | null;
   loading: boolean;
   handleTopicSelect: (topic: Topic) => void;
-  continueToNextTopic: () => void; // 👈 new
+  continueToNextTopic: () => void;
+  resetCourse: () => Promise<void>;
 }
 
 const CurriculumContext = createContext<CurriculumContextType | null>(null);
@@ -105,6 +106,42 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
       const nextTopic = newTopics.find((t) => t.id === nextId) || null;
       setActiveTopic(nextTopic);
       setActiveLesson(nextLesson);
+    } else {
+      // 👇 All 20 topics completed
+      setActiveTopic(null);
+      setActiveLesson(null);
+    }
+  };
+
+  const resetCourse = async () => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { error } = await supabase
+        .from("user_progress")
+        .delete()
+        .eq("user_id", user.id);
+
+      if (error) {
+        console.error("Failed to reset course:", error.message);
+        return;
+      }
+    }
+
+    // Reset all state
+    setCompletedIds([]);
+
+    const builtTopics = buildTopicsFromLessons(allLessons, [], 1);
+    setTopics(builtTopics);
+
+    const firstTopic = builtTopics.find((t) => t.status === "active");
+    if (firstTopic) {
+      setActiveTopic(firstTopic);
+      const lesson = allLessons.find((l) => l.topic_id === firstTopic.id);
+      setActiveLesson(lesson || null);
     }
   };
 
@@ -118,6 +155,7 @@ export function CurriculumProvider({ children }: { children: ReactNode }) {
         loading,
         handleTopicSelect,
         continueToNextTopic,
+        resetCourse,
       }}
     >
       {children}

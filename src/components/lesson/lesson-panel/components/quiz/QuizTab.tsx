@@ -16,10 +16,7 @@ interface QuizTabProps {
   onContinueToNext?: () => void;
 }
 
-function QuizTabContent({
-  lesson,
-  onContinueToNext,
-}: Omit<QuizTabProps, "topic">) {
+function QuizTabContent({ topic, lesson, onContinueToNext }: QuizTabProps) {
   const { status, startQuiz } = useQuiz();
 
   return (
@@ -67,7 +64,11 @@ export default function QuizTab({
       lesson={lesson}
       onQuizActiveChange={onQuizActiveChange}
     >
-      <QuizTabContent lesson={lesson} onContinueToNext={onContinueToNext} />
+      <QuizTabContent
+        topic={topic}
+        lesson={lesson}
+        onContinueToNext={onContinueToNext}
+      />
     </QuizProvider>
   );
 }

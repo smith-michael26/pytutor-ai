@@ -29,6 +29,7 @@ interface QuizContextType {
   codeAnswers: Record<number, CodeAnswer>;
   hintsUsed: Set<number>;
   earnedPoints: Record<number, number>;
+  topicId: number;
 
   startQuiz: () => Promise<void>;
   handlePrevious: () => void;
@@ -124,6 +125,7 @@ export function QuizProvider({
   const value: QuizContextType = {
     status,
     questions,
+    topicId: topic.id,
     currentIndex,
     maxPoints,
     currentQuestion,

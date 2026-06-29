@@ -17,6 +17,7 @@ function DashboardPageContent() {
     loading,
     handleTopicSelect,
     continueToNextTopic,
+    resetCourse,
   } = useCurriculum();
 
   const [aiPrompt, setAiPrompt] = useState<string>("");
@@ -53,6 +54,7 @@ function DashboardPageContent() {
         {/* Lesson Panel */}
         <Panel defaultSize={40} minSize={700} maxSize={1100}>
           <LessonPanel
+            topics={topics}
             topic={activeTopic}
             lesson={activeLesson}
             onTryInEditor={(code) => {
@@ -61,6 +63,7 @@ function DashboardPageContent() {
             }}
             onAskAI={(question) => setAiPrompt(question)}
             onContinueToNext={continueToNextTopic}
+            onResetCourse={resetCourse}
           />
         </Panel>
 

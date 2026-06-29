@@ -8,6 +8,8 @@ import { setIsLoading, setUser } from "@/store/slices/auth-slice";
 import { useAppDispatch } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/supabase/auth";
+import EyeCloseIcon from "../ui/icons/eye-close";
+import EyeOpenIcon from "../ui/icons/eye-open";
 
 export default function CreateAccountForm() {
   const [fullName, setFullName] = useState("");
@@ -16,6 +18,11 @@ export default function CreateAccountForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPasswordVisibility, setShowPasswordVisibility] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPasswordVisibility((prev) => !prev);
+  };
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -101,13 +108,13 @@ export default function CreateAccountForm() {
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 relative">
         <Label htmlFor="password" className="text-navy font-semibold">
           Password
         </Label>
         <Input
           id="password"
-          type="password"
+          type={showPasswordVisibility ? "text" : "password"}
           placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -115,6 +122,18 @@ export default function CreateAccountForm() {
           className="border-subtle focus-visible:ring-sky"
           disabled={loading}
         />
+
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="text-xs text-navy mt-1 hover:underline focus:outline-none cursor-pointer absolute right-2 top-[54%] transform -translate-y-1/2"
+        >
+          {showPasswordVisibility ? (
+            <EyeCloseIcon className="size-5" />
+          ) : (
+            <EyeOpenIcon className="size-5" />
+          )}
+        </button>
       </div>
 
       <div className="space-y-2">

@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/inputs/index";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { updatePassword } from "@/lib/supabase/auth";
+import EyeOpenIcon from "../ui/icons/eye-open";
+import EyeCloseIcon from "../ui/icons/eye-close";
 
 export default function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState("");
@@ -13,6 +15,12 @@ export default function ResetPasswordForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [showPasswordVisibility, setShowPasswordVisibility] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPasswordVisibility((prev) => !prev);
+  };
 
   const router = useRouter();
 
@@ -92,7 +100,7 @@ export default function ResetPasswordForm() {
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-2 relative">
         <Label htmlFor="new-password" className="text-navy font-semibold">
           New Password
         </Label>
@@ -106,6 +114,18 @@ export default function ResetPasswordForm() {
           className="border-subtle focus-visible:ring-sky"
           disabled={loading}
         />
+
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="text-xs text-navy mt-1 hover:underline focus:outline-none cursor-pointer absolute right-2 top-[54%] transform -translate-y-1/2"
+        >
+          {showPasswordVisibility ? (
+            <EyeCloseIcon className="size-5" />
+          ) : (
+            <EyeOpenIcon className="size-5" />
+          )}
+        </button>
       </div>
 
       <div className="space-y-2">
